@@ -14,32 +14,50 @@ async def start_register(callback: CallbackQuery, state:FSMContext):
     
 @router_register.message(CreateProfile.name)
 async def register_name(message: Message, state: FSMContext):
+    await state.update_data(name=message.text)
     await message.answer(f'Приятно познакомиться, {message.text} 👀\n'
                          'Теперь напиши свою фамилию:')
-    await state.update_data(name=message.text)
     await state.set_state(CreateProfile.last_name)
 
 @router_register.message(CreateProfile.last_name)
-async def register_name(message: Message, state: FSMContext):
-    await message.answer('Теперь напиши свой номер телефона (начиная с +7):')
+async def register_last_name(message: Message, state: FSMContext):
     await state.update_data(last_name=message.text)
-    await state.set_state(CreateProfile.phone)
-    
+    await state.set_state(CreateProfile.username)
+
+    await message.answer('Пожалуйста, убедись, что у тебя в профиле указан username.\n'
+                         'Как все проверишь, жми кнопку снизу',
+                         reply_markup=kb.username_keyboard)
+
+@router_register.callback_query(F.data == "username_from_profile")
+async def username_from_profile(callback: CallbackQuery, state: FSMContext):
+    username = callback.from_user.username
+    if not username:
+        await callback.message.answer('Кажется у тебя все еще не указан username.\n'
+                                      'Укажи его в профиле и повторно нажми на кнопку снизу\n',
+                         reply_markup=kb.username_keyboard)
+        await state.set_state(CreateProfile.username)
+
+    else:
+        await state.update_data(username=username)
+        await callback.message.edit_text('Теперь напиши свой номер телефона (начиная с +7):') 
+        await state.set_state(CreateProfile.phone)
+
+
 @router_register.message(CreateProfile.phone)
-async def register_photo_fake(message: Message, state: FSMContext):
-    await message.answer('Отлично, теперь напиши свой город:')
+async def register_phone(message: Message, state: FSMContext):
     await state.update_data(phone=message.text)
+    await message.answer('Отлично, теперь напиши свой город:')
     await state.set_state(CreateProfile.city)
                          
 @router_register.message(CreateProfile.city)
-async def register_photo_fake(message: Message, state: FSMContext):
+async def register_city(message: Message, state: FSMContext):
     await state.update_data(city=message.text)
 
     reg_data = await state.get_data()
     name = reg_data.get("name")
     last_name = reg_data.get("last_name")
     tg_id = message.chat.id
-    username = message.chat.username
+    username = reg_data.get("username")
     phone = reg_data.get("phone")
     city = reg_data.get("city")
 
@@ -50,4 +68,4 @@ async def register_photo_fake(message: Message, state: FSMContext):
                                   f'Номер телефона: {phone}\n'
                                   f'Город: {city}\n\n'
                                   'Если вдруг ошибся с данными, то можешь изменить их, используя кнопки снизу',
-                                  reply_markup=kb.change_keyboard)
+                                  reply_markup=kb.profile_keyboard)

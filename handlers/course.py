@@ -16,7 +16,6 @@ async def yuan():
                 response.raise_for_status()
                 soup = BeautifulSoup(await response.text(), "html.parser")
 
-                # Ищем элемент с нужным data-id
                 currency_element = soup.find("div", {"data-id": 156})
 
                 if currency_element:
