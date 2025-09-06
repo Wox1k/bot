@@ -10,7 +10,7 @@ import utils.keyboards as kb
 
 router_calculations = Router()
 
-@router_calculations.callback_query(F.data == 'calc_order')
+@router_calculations.callback_query(F.data == "calc_order")
 async def calc_order(callback: CallbackQuery, state:FSMContext):
     await callback.message.edit_text(text="📝 Укажи общую сумму заказа в ¥ (например, 97.90)",
                                      reply_markup=kb.menu_keyboard)
@@ -41,7 +41,7 @@ async def calculations_order(message: Message, state: FSMContext, bot: Bot):
     
     await state.set_state(Calculations.price)
 
-@router_calculations.callback_query(F.data == 'calc_delivery')
+@router_calculations.callback_query(F.data == "calc_delivery")
 async def calc_delivery(callback: CallbackQuery, state:FSMContext):
     await callback.message.edit_text(text="💎 Хочешь заранее прикинуть бюджет?\n"
                                      "Мы можем ориентировочно рассчитать стоимость доставки из Китая, если ты знаешь ориентировочный вес товара.\n\n"
@@ -63,7 +63,7 @@ async def calc_faq_delivery(callback: CallbackQuery, state:FSMContext):
     
     await state.clear()
     
-@router_calculations.callback_query(F.data == 'calc_ru')
+@router_calculations.callback_query(F.data == "calc_ru")
 async def calc_ru(callback: CallbackQuery, state:FSMContext):
     await callback.message.edit_text(text="📦 Для точного расчета доставки от нашего склада до твоего города воспользуйся официальными калькуляторами:\n\n"
                                      "• Калькулятор СДЭК: https://www.cdek.ru/ru/calculate\n"
@@ -77,7 +77,7 @@ async def calc_ru(callback: CallbackQuery, state:FSMContext):
     
     await state.clear()
     
-@router_calculations.callback_query(F.data == 'calc_cn')
+@router_calculations.callback_query(F.data == "calc_cn")
 async def calc_cn(callback: CallbackQuery, state:FSMContext):
     await callback.message.edit_text(text="✏️ Введи ориентировочный вес товара в килограммах (например: 1.5):",
                                      reply_markup=kb.menu_keyboard)
@@ -91,7 +91,8 @@ async def calculations_order(message: Message, state: FSMContext, bot: Bot):
     result = round(weight * tariff, 1)
 
     await bot.send_message(message.from_user.id, 
-                           text="✅ Ориентировочная стоимость доставки Китай -> Москва:\n\n"
+                           text="✅ Ориентировочная стоимость доставки\n"
+                           "Китай -> Ростов-на-Дону:\n\n"
                            f"• Предполагаемый вес: {weight}\n"
                            f"• Усредненный тариф: {tariff} ₽/кг\n"
                            f"• Итого: {result} ₽",

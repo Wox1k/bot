@@ -27,3 +27,7 @@ class Calculations(StatesGroup):
 class Admin(StatesGroup):
     order_id = State()
     order_track_num = State()
+    change_order_track_num = State()
+    new_order_track_num = State()
+    change_track_num = State()
+    change_tg_id = State()

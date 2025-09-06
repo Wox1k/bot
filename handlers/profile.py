@@ -23,10 +23,10 @@ async def profile(callback: CallbackQuery, state: FSMContext):
         phone = record[0]["phone"]
         city = record[0]["city"]
 
-        await callback.message.edit_text(text=f'Имя: {name} {last_name}\n'
-                                         f'Номер телефона: {phone}\n'
-                                         f'Город: {city}\n\n'
-                                         'При необходимости можешь изменить данные, нажав кнопку снизу',
+        await callback.message.edit_text(text=f"Имя: {name} {last_name}\n"
+                                         f"Номер телефона: {phone}\n"
+                                         f"Город: {city}\n\n"
+                                         "При необходимости можешь изменить данные, нажав кнопку снизу",
                                          reply_markup=kb.profile_keyboard)
     await state.clear()
         
@@ -39,10 +39,10 @@ async def change_profile(callback: CallbackQuery):
     phone = record[0]["phone"]
     city = record[0]["city"]
 
-    await callback.message.edit_text(text=f'Имя: {name} {last_name}\n'
-                                     f'Номер телефона: {phone}\n'
-                                     f'Город: {city}\n\n'
-                                     'Выбери, что хочешь изменить',
+    await callback.message.edit_text(text=f"Имя: {name} {last_name}\n"
+                                     f"Номер телефона: {phone}\n"
+                                     f"Город: {city}\n\n"
+                                     "Выбери, что хочешь изменить",
                                      reply_markup=kb.change_keyboard)
     
 @router_profile.callback_query(F.data == "tg_id")

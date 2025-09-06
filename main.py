@@ -8,7 +8,6 @@ from aiogram import Bot, Dispatcher
 from handlers.admin_panel import router_admin
 from handlers.calculations import router_calculations
 from handlers.course import router_course
-from handlers.edit_order import router_edit_order
 from handlers.edit_profile import router_edit_profile
 from handlers.menu import router_menu
 from handlers.profile import router_profile
@@ -40,7 +39,6 @@ async def main():
         router_admin,
         router_calculations,
         router_course,
-        router_edit_order,
         router_edit_profile,
         router_menu,
         router_profile,
@@ -56,7 +54,6 @@ async def main():
 
 if __name__ == "__main__":
     try:
-        clear_order()
         asyncio.run(main())
     except KeyboardInterrupt:
-        print('Exit')
+        print("Exit")

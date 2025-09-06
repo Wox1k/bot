@@ -1,4 +1,46 @@
-from aiogram.utils.keyboard import InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.utils.keyboard import InlineKeyboardMarkup, InlineKeyboardButton, InlineKeyboardBuilder
+
+from handlers.tracking import button_count
+from database import people_orders
+
+async def orders_keyboard_build(tg_id: int, start_orders: int):
+    orders = people_orders(tg_id)
+    orders_counter = len(orders)
+
+    kb = InlineKeyboardBuilder()
+    two_buttons_flag = 0
+
+    if start_orders >= button_count:
+        kb.add(InlineKeyboardButton(text = "<< Назад", callback_data = f"back_list:{start_orders}"))
+        two_buttons_flag += 1
+    if start_orders + button_count < orders_counter:
+        kb.add(InlineKeyboardButton(text = "Вперед >>", callback_data = f"forward_list:{start_orders}"))
+        two_buttons_flag += 1
+
+    end = min(start_orders + button_count, orders_counter)
+
+    for ind in range(start_orders, end):    
+        order = orders[ind]
+
+        order_id = order["id"]
+
+        kb.button(text = f" Заказ №{order_id}", 
+                        callback_data = f"order:{order_id}:{start_orders}")
+
+    kb.add(InlineKeyboardButton(text = "Меню ⫶", callback_data = f"menu"))
+           
+    if two_buttons_flag == 2:
+        kb.adjust(2,1)
+    else:
+        kb.adjust(1)
+
+    return kb
+
+async def orders_back_keyboard_build(start_orders: int):
+    kb = InlineKeyboardBuilder()
+    kb.add(InlineKeyboardButton(text = "Назад ↩", callback_data = f"start:{start_orders}"))
+
+    return kb
 
 main_true_keyboard = InlineKeyboardMarkup(
     inline_keyboard=[
@@ -241,22 +283,22 @@ change_username_keyboard = InlineKeyboardMarkup(
 admin_keyboard = InlineKeyboardMarkup(
     inline_keyboard=[
         [
-            InlineKeyboardButton(text = 'Информация об участнике ⓘ', callback_data = 'info_about_user')
+            InlineKeyboardButton(text = "Информация об участнике ⓘ", callback_data = "info_about_user")
         ],
         [
-            InlineKeyboardButton(text = 'Изменить роли учатников 🔄🎭', callback_data = 'change_roles')
+            InlineKeyboardButton(text = "Добавить заказ 📦", callback_data = "new_order")
         ],
         [
-            InlineKeyboardButton(text = 'Отправить ответ пользователю ✉️', callback_data = 'mail_to_one')
+            InlineKeyboardButton(text = "Изменить информацию о заказе 🔄📦", callback_data = "change_order")
         ],
         [
-            InlineKeyboardButton(text = 'Рассылка всем участникам 📢', callback_data = 'mail_to_all')
+            InlineKeyboardButton(text = "Отправить сообщение пользователю ✉️", callback_data = "mail_to_one")
         ],
         [
-            InlineKeyboardButton(text = 'Добавить заказ 📦', callback_data = 'new_order')
+            InlineKeyboardButton(text = "Рассылка всем участникам 📢", callback_data = "mail_to_all")
         ],
         [
-            InlineKeyboardButton(text = 'Перейти в меню команд ⋮', callback_data = 'menu')
+            InlineKeyboardButton(text = "Перейти в меню команд ⋮", callback_data = "menu")
         ]
     ]
 )
@@ -264,7 +306,7 @@ admin_keyboard = InlineKeyboardMarkup(
 admin_back_keyboard = InlineKeyboardMarkup(
     inline_keyboard=[
         [
-            InlineKeyboardButton(text = 'Вернуться к панели админа 🔑', callback_data = 'admin_back')
+            InlineKeyboardButton(text = "Вернуться к панели админа 🔑", callback_data = "admin_back")
         ],
     ]
 )
@@ -281,7 +323,24 @@ change_order_keyboard = InlineKeyboardMarkup(
             InlineKeyboardButton(text="Изменить статус", callback_data="change_status")
         ],
         [
-            InlineKeyboardButton(text = 'Вернуться к панели админа 🔑', callback_data = 'admin_back')
+            InlineKeyboardButton(text="Сохранить заказ ✅", callback_data="save_order")
+        ],
+        [
+            InlineKeyboardButton(text = "Вернуться к панели админа 🔑", callback_data = "admin_back")
+        ],
+    ]
+)
+
+change_track_num_keyboard = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [
+            InlineKeyboardButton(text="Изменить трек-номер", callback_data="change_order_track_num")
+        ],
+        [
+            InlineKeyboardButton(text="Изменить статус", callback_data="change_order_status")
+        ],
+        [
+            InlineKeyboardButton(text = "Вернуться к панели админа 🔑", callback_data = "admin_back")
         ],
     ]
 )
@@ -293,6 +352,35 @@ referal_keyboard = InlineKeyboardMarkup(
         ],
         [
             InlineKeyboardButton(text="Вернуться в меню ⫶", callback_data="menu")
+        ]
+    ]
+)
+
+status_keyboard = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [
+            InlineKeyboardButton(text="Выкуплен у продавца 💵", callback_data="status:Выкуплен у продавца 💵")
+        ],
+        [
+            InlineKeyboardButton(text="На складе в Китае 🇨🇳📦", callback_data="status:На складе в Китае 🇨🇳📦")
+        ],
+        [
+            InlineKeyboardButton(text="Отправлен в Москву 🇷🇺", callback_data="status:Отправлен в Москву 🇷🇺")
+        ],
+        [
+            InlineKeyboardButton(text="На складе в Москве 🇷🇺📦", callback_data="status:На складе в Москве 🇷🇺📦")
+        ],
+        [
+            InlineKeyboardButton(text="Отправлен в Ростов-на-Дону 🚚", callback_data="status:Отправлен в Ростов-на-Дону 🚚")
+        ],
+        [
+            InlineKeyboardButton(text="На складе в Ростове-на-Дону 🏠", callback_data="status:На складе в Ростове-на-Дону 🏠")
+        ],
+        [
+            InlineKeyboardButton(text="Выполнен ✅", callback_data="status:Выполнен ✅")
+        ],
+        [
+            InlineKeyboardButton(text="Вернуться к панели админа 🔑", callback_data="admin_back")
         ]
     ]
 )

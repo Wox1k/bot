@@ -6,7 +6,7 @@ from database import check_profile
 
 router_referal = Router()
 
-@router_referal.callback_query(F.data == 'referal')
+@router_referal.callback_query(F.data == "referal")
 async def change_name(callback: CallbackQuery):
     record = check_profile(callback.from_user.id)
 
@@ -18,5 +18,5 @@ async def change_name(callback: CallbackQuery):
     else:
         discount = record[0]["discount"]
 
-        await callback.message.edit_text(text=f'Текущая скидка: {discount}%',
+        await callback.message.edit_text(text=f"Текущая скидка: {discount}%",
                                          reply_markup=kb.referal_keyboard)
